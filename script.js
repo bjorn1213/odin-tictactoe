@@ -61,6 +61,18 @@ const gameBoard = (() => {
       return { gameIsOver, winner };
     }
 
+    let freeSpaceCounter = 0;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (_board[i][j] === undefined) {
+          freeSpaceCounter++;
+        }
+      }
+    }
+    if (freeSpaceCounter === 0) {
+      return { gameIsOver: true, winner };
+    }
+
     for (let row = 0; row < 3 && !gameIsOver; row++) {
       if (
         _board[row][0] === _board[row][1] &&
