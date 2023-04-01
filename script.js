@@ -41,9 +41,67 @@ const gameBoard = (() => {
     return true;
   };
 
+  const resetBoard = () => {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        _board[i][j] = undefined;
+      }
+    }
+  };
+
+  const checkGameOver = () => {
+    let gameIsOver = false;
+    let winner;
+
+    if (
+      _board[0][0] === _board[1][1] &&
+      _board[0][0] === _board[2][2] &&
+      _board[0][0] === undefined
+    ) {
+      return { gameIsOver, winner };
+    }
+
+    for (let row = 0; row < 3 && !gameIsOver; row++) {
+      if (
+        _board[row][0] === _board[row][1] &&
+        _board[row][0] === _board[row][2]
+      ) {
+        gameIsOver = true;
+        winner = _board[row][0];
+      }
+    }
+    for (let col = 0; col < 3 && !gameIsOver; col++) {
+      if (
+        _board[0][col] === _board[1][col] &&
+        _board[0][col] === _board[2][col]
+      ) {
+        gameIsOver = true;
+        winner = _board[0][col];
+      }
+    }
+    if (!gameIsOver) {
+      if (_board[0][0] === _board[1][1] && _board[0][0] === _board[2][2]) {
+        gameIsOver = true;
+        winner = _board[0][0];
+      }
+      if (_board[2][0] === _board[1][1] && _board[2][0] === _board[0][2]) {
+        gameIsOver = true;
+        winner = _board[2][0];
+      }
+    }
+
+    return { gameIsOver, winner };
+  };
+
   const getPositionValue = (i, j) => _board[i][j];
 
-  return { getBoardRepresentation, playOnSpot, getPositionValue };
+  return {
+    getBoardRepresentation,
+    playOnSpot,
+    getPositionValue,
+    checkGameOver,
+    resetBoard,
+  };
 })();
 
 const displayController = (() => {
@@ -111,7 +169,15 @@ const displayController = (() => {
     displayHtmlBoard();
   };
 
-  return { setPlayers, setBoard, printPlayers, nextPlayerPlaysOnBoard };
+  const checkBoard = () => _board.checkGameOver();
+
+  return {
+    setPlayers,
+    setBoard,
+    printPlayers,
+    nextPlayerPlaysOnBoard,
+    checkBoard,
+  };
 })();
 
 const Player = (name) => {
