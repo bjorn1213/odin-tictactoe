@@ -1,0 +1,36 @@
+body,
+html {
+  height: 100vh;
+}
+
+.pagecontainer {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gamecontainer {
+  height: 100%;
+  width: 80%;
+  background-color: black;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.gamesquare {
+  background-color: white;
+  font-size: 20vh;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty:hover {
+  background-color: #eee;
+}
