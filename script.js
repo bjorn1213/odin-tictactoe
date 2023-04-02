@@ -90,11 +90,19 @@ const gameBoard = (() => {
 
     // check for diag-win
     if (!gameIsOver) {
-      if (_board[0][0] === _board[1][1] && _board[0][0] === _board[2][2]) {
+      if (
+        _board[0][0] === _board[1][1] &&
+        _board[0][0] === _board[2][2] &&
+        _board[0][0] !== undefined
+      ) {
         gameIsOver = true;
         winner = _board[0][0];
       }
-      if (_board[2][0] === _board[1][1] && _board[2][0] === _board[0][2]) {
+      if (
+        _board[2][0] === _board[1][1] &&
+        _board[2][0] === _board[0][2] &&
+        _board[2][0] !== undefined
+      ) {
         gameIsOver = true;
         winner = _board[2][0];
       }
@@ -160,16 +168,37 @@ const displayController = (() => {
     overlayElement.style.display = "flex";
   };
 
+  const checkAndProcessGameEnd = () => {
+    const gameState = _board.checkGameOver();
+
+    if (gameState.gameIsOver) {
+      if (gameState.winner !== undefined) {
+        _players[gameState.winner].registerWin();
+      }
+      displayWinner(gameState.winner);
+    }
+  };
+
   const nextPlayerPlaysOnBoard = (i, j) => {
     if (_board.playOnSpot(i, j, _currentPlayerIndex)) {
       _currentPlayerIndex = 1 - _currentPlayerIndex; // switch active player
-
-      const gameState = _board.checkGameOver();
-
-      if (gameState.gameIsOver) {
-        displayWinner(gameState.winner);
-      }
+      checkAndProcessGameEnd();
     }
+  };
+
+  const generateGameStats = () => {
+    const playerNames = document.querySelectorAll(".playerName");
+    const playerScores = document.querySelectorAll(".playerScore");
+    const nextPlayer = document.getElementById("next-up");
+
+    for (let i = 0; i < _players.length; i++) {
+      playerNames[i].textContent = _players[i].name;
+      playerScores[i].textContent = _players[i].getScore();
+    }
+
+    nextPlayer.textContent = `Next up: ${_players[_currentPlayerIndex].name} (${
+      _currentPlayerIndex === 0 ? "O" : "X"
+    })`;
   };
 
   const displayHtmlBoard = () => {
@@ -209,6 +238,8 @@ const displayController = (() => {
     }
 
     oldGameContainer.replaceWith(gameContainer);
+
+    generateGameStats();
   };
 
   const restartGame = () => {
@@ -237,10 +268,14 @@ const displayController = (() => {
     buttonContinue.addEventListener("click", continueGame);
   };
 
-  const setBoard = (board) => {
-    _board = board;
+  const initialiseController = () => {
     initialiseOverlayButtons();
     displayHtmlBoard();
+  };
+
+  const setBoard = (board) => {
+    _board = board;
+    initialiseController();
   };
 
   const checkBoard = () => _board.checkGameOver();
@@ -266,7 +301,9 @@ const Player = (name) => {
     score = 0;
   };
 
-  return { name, playerSymbol, registerWin, resetScore };
+  const getScore = () => score;
+
+  return { name, playerSymbol, registerWin, resetScore, getScore };
 };
 
 const player1 = Player("Jonas", 0);

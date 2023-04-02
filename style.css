@@ -9,25 +9,54 @@ html {
 
 .pagecontainer {
   height: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr;
+}
+
+.gameinfo {
+  font-size: 1.5rem;
+  align-self: end;
+  justify-self: center;
+
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  gap: 4px;
+
+  margin: 10px;
+}
+
+#info-title {
+  grid-column: 1/-1;
+  text-align: center;
+  font-weight: bold;
+}
+
+#next-up {
+  grid-column: 1/-1;
+  text-align: center;
+}
+
+.playerName {
+  text-align: right;
 }
 
 .gamecontainer {
   height: min(80%, 500px);
   width: min(60%, 500px);
 
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: min(5vh, 20px);
+  align-self: start;
+  justify-self: center;
 
   box-shadow: 0px 0px 49px -22px rgba(0, 0, 0, 0.25);
   padding: 20px;
   border-radius: 20px;
   align-self: flex-start;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: min(5vh, 20px);
 }
 
 .gamesquare {
