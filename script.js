@@ -66,7 +66,8 @@ const gameBoard = (() => {
     for (let row = 0; row < 3 && !gameIsOver; row++) {
       if (
         _board[row][0] === _board[row][1] &&
-        _board[row][0] === _board[row][2]
+        _board[row][0] === _board[row][2] &&
+        _board[row][0] !== undefined
       ) {
         gameIsOver = true;
         winner = _board[row][0];
@@ -78,7 +79,8 @@ const gameBoard = (() => {
       for (let col = 0; col < 3 && !gameIsOver; col++) {
         if (
           _board[0][col] === _board[1][col] &&
-          _board[0][col] === _board[2][col]
+          _board[0][col] === _board[2][col] &&
+          _board[0][col] !== undefined
         ) {
           gameIsOver = true;
           winner = _board[0][col];
@@ -142,9 +144,31 @@ const displayController = (() => {
     }
   };
 
+  const displayWinner = (winner) => {
+    let winnerText;
+
+    if (winner === undefined) {
+      winnerText = "The game is tied";
+    } else {
+      winnerText = `The winner is ${_players[winner].name}!`;
+    }
+
+    const overlayElement = document.getElementById("overlay");
+    const overlayText = document.getElementById("overlay-text");
+
+    overlayText.textContent = winnerText;
+    overlayElement.style.display = "flex";
+  };
+
   const nextPlayerPlaysOnBoard = (i, j) => {
     if (_board.playOnSpot(i, j, _currentPlayerIndex)) {
       _currentPlayerIndex = 1 - _currentPlayerIndex; // switch active player
+
+      const gameState = _board.checkGameOver();
+
+      if (gameState.gameIsOver) {
+        displayWinner(gameState.winner);
+      }
     }
   };
 
@@ -187,8 +211,35 @@ const displayController = (() => {
     oldGameContainer.replaceWith(gameContainer);
   };
 
+  const restartGame = () => {
+    _board.resetBoard();
+    document.getElementById("overlay").style.display = "none";
+
+    _players.forEach((player) => {
+      player.resetScore();
+    });
+
+    displayHtmlBoard();
+  };
+
+  const continueGame = () => {
+    _board.resetBoard();
+    document.getElementById("overlay").style.display = "none";
+
+    displayHtmlBoard();
+  };
+
+  const initialiseOverlayButtons = () => {
+    const buttonContinue = document.getElementById("btn-continue");
+    const buttonRestartGame = document.getElementById("btn-restart");
+
+    buttonRestartGame.addEventListener("click", restartGame);
+    buttonContinue.addEventListener("click", continueGame);
+  };
+
   const setBoard = (board) => {
     _board = board;
+    initialiseOverlayButtons();
     displayHtmlBoard();
   };
 
@@ -205,8 +256,17 @@ const displayController = (() => {
 
 const Player = (name) => {
   const playerSymbol = undefined;
+  let score = 0;
 
-  return { name, playerSymbol };
+  const registerWin = () => {
+    score++;
+  };
+
+  const resetScore = () => {
+    score = 0;
+  };
+
+  return { name, playerSymbol, registerWin, resetScore };
 };
 
 const player1 = Player("Jonas", 0);
