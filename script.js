@@ -53,6 +53,7 @@ const gameBoard = (() => {
     let gameIsOver = false;
     let winner;
 
+    // if diagonal is empty - no winner yet
     if (
       _board[0][0] === _board[1][1] &&
       _board[0][0] === _board[2][2] &&
@@ -61,18 +62,7 @@ const gameBoard = (() => {
       return { gameIsOver, winner };
     }
 
-    let freeSpaceCounter = 0;
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (_board[i][j] === undefined) {
-          freeSpaceCounter++;
-        }
-      }
-    }
-    if (freeSpaceCounter === 0) {
-      return { gameIsOver: true, winner };
-    }
-
+    // check for a row-win
     for (let row = 0; row < 3 && !gameIsOver; row++) {
       if (
         _board[row][0] === _board[row][1] &&
@@ -82,15 +72,21 @@ const gameBoard = (() => {
         winner = _board[row][0];
       }
     }
-    for (let col = 0; col < 3 && !gameIsOver; col++) {
-      if (
-        _board[0][col] === _board[1][col] &&
-        _board[0][col] === _board[2][col]
-      ) {
-        gameIsOver = true;
-        winner = _board[0][col];
+
+    // check for col-win
+    if (!gameIsOver) {
+      for (let col = 0; col < 3 && !gameIsOver; col++) {
+        if (
+          _board[0][col] === _board[1][col] &&
+          _board[0][col] === _board[2][col]
+        ) {
+          gameIsOver = true;
+          winner = _board[0][col];
+        }
       }
     }
+
+    // check for diag-win
     if (!gameIsOver) {
       if (_board[0][0] === _board[1][1] && _board[0][0] === _board[2][2]) {
         gameIsOver = true;
@@ -99,6 +95,21 @@ const gameBoard = (() => {
       if (_board[2][0] === _board[1][1] && _board[2][0] === _board[0][2]) {
         gameIsOver = true;
         winner = _board[2][0];
+      }
+    }
+
+    // check for tied game
+    if (!gameIsOver) {
+      let freeSpaceCounter = 0;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (_board[i][j] === undefined) {
+            freeSpaceCounter++;
+          }
+        }
+      }
+      if (freeSpaceCounter === 0) {
+        return { gameIsOver: true, winner };
       }
     }
 
@@ -138,7 +149,7 @@ const displayController = (() => {
   };
 
   const displayHtmlBoard = () => {
-    const pageContainer = document.getElementById("pagecontainer");
+    const oldGameContainer = document.getElementById("gamecontainer");
 
     const gameContainer = document.createElement("div");
     gameContainer.setAttribute("id", "gamecontainer");
@@ -173,7 +184,7 @@ const displayController = (() => {
       }
     }
 
-    pageContainer.replaceChildren(gameContainer);
+    oldGameContainer.replaceWith(gameContainer);
   };
 
   const setBoard = (board) => {
